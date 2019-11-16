@@ -52,9 +52,9 @@ let requestHandler = async (request, response) => {
             console.log(`trying to open ${filename} :: ${mode}`)
             fs.open(filename, mode, (err, fd) => {
                 fs.write(fd, body, x => {
-                    console.log("write complete?")
+                    // console.log("write complete?")
                     fs.close(fd, _ => {
-                        console.log("and close?")
+                        console.log("written to input pipe")
                     })
                 })
             })
