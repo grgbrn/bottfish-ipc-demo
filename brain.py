@@ -3,8 +3,10 @@ import os
 import time
 
 
-INPUT_PIPE_PATH="input"
-OUTPUT_PIPE_PATH="output"
+# read messages from node
+INPUT_PIPE_PATH="N2P"
+# send responses to node
+OUTPUT_PIPE_PATH="P2N"
 
 
 # courtesy https://www.ravenblack.net/random/surreal.html
@@ -18,14 +20,15 @@ def loop():
 
     while True:
         try:
-            _cmd = os.read(control, 80)
+            # XXX need to buffer this for messages > 512 bytes
+            _cmd = os.read(control, 512)
             if _cmd:
                 print(">>> got a message")
                 print(_cmd)
 
                 # simulate a long process to simulate surreal responses
                 print(">>> generating surreal response, please wait!")
-                time.sleep(1)
+                time.sleep(10)
                 response_data = bytes(json.dumps(response), 'utf-8')
                 print(response_data, type(response_data))
 

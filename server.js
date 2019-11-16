@@ -11,22 +11,22 @@ const path = require('path');
 
 const port = 3000
 
-// XXX ok these names don't make a lot of sense
-// from node's perspective
+const inputPipe = "p2n"
+const outputPipe = "n2p"
 
-const inputPipe = fs.createWriteStream("input", {
-    flags: fs.O_WRONLY | fs.O_APPEND
 
-})
-const outputPipe = fs.createReadStream("output")
-
-/*
-outputPipe.on('data', data => {
-  // process data...
+// XXX error handling here
+var rs = fs.createReadStream(inputPipe, {
+    flags: fs.constants.O_RDONLY | fs.constants.O_APPEND,
+    encoding: 'utf8'
 });
-*/
+rs.on('data', function(data) {
+    console.log(">>> got data from python")
+    console.log(data);
+});
 
-let requestHandler = async (request, response) => {
+
+let requestHandler = (request, response) => {
     console.log(request.url)
 
     if (request.method == 'POST') {
@@ -46,11 +46,9 @@ let requestHandler = async (request, response) => {
             var payload = JSON.parse(body)
             console.log(payload)
 
-            const filename = "input"
             const mode = fs.constants.O_WRONLY | fs.constants.O_APPEND
 
-            console.log(`trying to open ${filename} :: ${mode}`)
-            fs.open(filename, mode, (err, fd) => {
+            fs.open(outputPipe, mode, (err, fd) => {
                 fs.write(fd, body, x => {
                     // console.log("write complete?")
                     fs.close(fd, _ => {
@@ -61,6 +59,7 @@ let requestHandler = async (request, response) => {
         });
     }
 
+    // XXX responses here aren't useful
     response.end('Hello Node.js Server!')
 }
 
